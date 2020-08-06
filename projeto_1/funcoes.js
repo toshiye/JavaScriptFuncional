@@ -6,8 +6,9 @@ const { rejects } = require('assert')
 function lerDiretorio(caminho){
     return new Promise((resolve, reject) => {
         try{
-            let arquivos = fs.readdirSync(caminho)
-            arquivos = arquivos.map(arquivo => path.join(caminho, arquivo))
+            let arquivos = fs.readdirSync(caminho).map(arquivo => {
+                return path.join(caminho, arquivo)
+            })
             resolve(arquivos)
         } catch(e) {
             reject(e)
@@ -56,12 +57,37 @@ function removerElementosSeApenasNumero(array){
 function removerSimbolos(simbolos){
     return function(array){
         return array.map(el => {
-            let textoSemSimbolos = el
-            simbolos.forEach(simbolo => {
-                textoSemSimbolos = textoSemSimbolos.split(simbolo).join('')
-            })
-            return textoSemSimbolos
+            return simbolos.reduce((acc, simbolo) => {
+                return acc.split(simbolo).join('')
+            }, el)
         })
+    }
+}
+
+function mesclarElementos (array){
+    return array.join(' ')
+}
+
+function separarTextoPor(simbolo){
+    return function(texto){
+        return texto.split(simbolo)
+    }
+}
+
+function agruparElementos(palavras){
+    return Object.values(palavras.reduce((acc, palavra) => {
+        const el = palavra.toLowerCase()
+        const qtde = acc[el] ? acc[el].qtde + 1 : 1        
+        acc[el] = {elemento: el, qtde}
+        return acc
+    }, {}))
+}
+
+function ordenarPorAtributoNumerico(attr, ordem = 'asc'){
+    return function(array){
+        const asc = (o1, o2) => o1[attr] -o2[attr]
+        const desc = (o1, o2) => o2[attr] - o1[attr]
+        return [...array].sort(ordem === 'asc' ? asc : desc)
     }
 }
 
@@ -73,5 +99,9 @@ module.exports = {
     removerElementosSeVazio,
     removerElementosSeIncluir,
     removerElementosSeApenasNumero,
-    removerSimbolos
+    removerSimbolos,
+    mesclarElementos,
+    separarTextoPor,
+    agruparElementos,
+    ordenarPorAtributoNumerico
 }
