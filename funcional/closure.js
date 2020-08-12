@@ -1,1 +1,0 @@
-/* Closure é quando uma funçao lembra seu escopo léxico, mesmo quando uma função é executada fora desse escopo léxico. */
