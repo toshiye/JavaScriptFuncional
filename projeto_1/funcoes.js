@@ -3,6 +3,18 @@ const path = require('path')
 const { resolve } = require('path')
 const { rejects } = require('assert')
 
+function composicao(...fns){
+    return function(valor){
+        return fns.reduce(async (acc, fn) => {
+            if(Promise.resolve(acc) === acc){
+                return fn(await acc)
+            } else {
+                return fn(acc)
+            }
+        }, valor)
+    }
+}
+
 function lerDiretorio(caminho){
     return new Promise((resolve, reject) => {
         try{
@@ -91,7 +103,9 @@ function ordenarPorAtributoNumerico(attr, ordem = 'asc'){
     }
 }
 
+
 module.exports = {
+    composicao,
     lerDiretorio,
     lerArquivo,
     lerArquivos,
